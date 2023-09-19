@@ -1,17 +1,8 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import React from 'react'
 import './App.css'
-
-const welcome = {
-  greeting: 'hey',
-  title: "react",
-};
-function toUpperGreeting(greeting){
-  return greeting.toUpperCase();
-}
-
-
 
 const App = () => {
   const stories = [
@@ -32,52 +23,60 @@ const App = () => {
       objectID: 1,
     },
   ];
-  return (
-    <div>
-      <h1>Hacker Stories</h1>
+  const [searchTerm, setSearchTerm ] = React.useState('React');
 
-      <hr />
-      <Search />
-      <List list = {stories}/>
-    </div>
-  )
-}
-
-const Search = () => {
-  const handleChange = (event) => {
-    // synthetic event
-    console.log(event);
-    // value of target (here: input HTML element)
-    console.log(event.target.value);
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
   };
 
+  const searchedStories = stories.filter(function (story) {
+    return story.title.toLowerCase().includes(searchTerm.toLowerCase())
+  });
+
   return (
     <div>
-      <label htmlFor='search'>Search: </label>
-      <input id="search" type="text" onChange={handleChange}/>
-    </div>
-  )
-}
+      <h1>My Hacker Stories</h1>
+      <Search search = {searchTerm} onSearch={handleSearch}/>
 
-const List = (props) =>(
+      <hr />
+
+      <List list = {searchedStories}/>
+    </div>
+  );
+};
+
+const Search = ({search, onSearch}) => (
+
+    <div>
+      <label htmlFor='search'>Search: </label>
+      <input 
+        id="search" 
+        type="text" 
+        value = {search} 
+        onChange={onSearch}
+      />
+    </div>
+);
+
+const List = ({list}) =>(
     <ul>
-        {props.list.map((item) => (
-          <Item key = {item.objectID} item = {item} />
+        {list.map(({objectID, ...item}) => (
+          <Item key = {objectID} {...item}/>
         ))}
     </ul>
   
-)
+);
 
-const Item = (props) => (
+const Item = ({title, url, author, num_comments, points}) => (
   <li>
     <span>
-      <a href={props.item.url}>{props.item.title} </a>
+      <a href={url}>{title} </a>
     </span>
-    <span>{props.item.author} </span>
-    <span>{props.item.num_comments} </span>
-    <span>{props.item.points} </span>
+    <span>{author} </span>
+    <span>{num_comments} </span>
+    <span>{points} </span>
   </li>
-)
+);
 // function App() {
 //   const [count, setCount] = useState(0)
 
